@@ -4,14 +4,30 @@ from openai import OpenAI
 client = OpenAI()
 
 def main():
-    print("Type 'exit' to quit")
+    chatType = input("Enter 'prompt' or 'roles': ")
     flag = True
-    while(flag):
-        prompt = input("Enter a prompt: ")
-        if prompt == "exit":
-            flag = False
-        else:
-            query_openai(prompt)
+    print("Type 'exit' to quit")
+    if chatType == 'prompt':
+        while(flag):
+            prompt = input("Enter a prompt: ")
+            if prompt == "exit":
+                flag = False
+            else:
+                query_openai(prompt)
+                print("\n")
+    elif chatType == 'roles':
+        while(flag):
+            role = input("Enter a role for the chat bot: ")
+            if role == "exit":
+                flag = False
+            else:
+                prompt = input("Enter a prompt: ")
+                if prompt == "exit":
+                    flag = False
+                else:
+                    print("\n")
+                    query_openai_roles(role,prompt)
+                    print("\n")
 
 def query_openai(prompt):
     completion = client.completions.create(
@@ -20,6 +36,16 @@ def query_openai(prompt):
         max_tokens=100
     )
     print(completion.choices[0].text)
+
+def query_openai_roles(systemRole, prompt):
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": systemRole},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    print(completion.choices[0].message.content)
 
 if __name__ == "__main__":
     main()
